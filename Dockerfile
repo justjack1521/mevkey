@@ -26,7 +26,7 @@ ENV KC_DB_URL=jdbc:postgresql://mobius-do-user-7620299-0.b.db.ondigitalocean.com
 ENV KC_DB_USERNAME=doadmin
 ENV KC_DB_PASSWORD=kljbn14vu5fcn15s
 ENV KC_HOSTNAME=mevkey-hqezz.ondigitalocean.app
-ENV KC_HOSTNAME_ADMIN=mevkey-hqezz.ondigitalocean.app/auth
+ENV KC_HOSTNAME_DEBUG=true
 
 WORKDIR /opt/keycloak
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
