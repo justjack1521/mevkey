@@ -8,13 +8,17 @@ ENV KC_METRICS_ENABLED=true
 ENV KC_DB=postgres
 
 WORKDIR /opt/keycloak
-# for demonstration purposes only, please make sure to use proper certificates in production instead
+
+COPY keycloak-server.crt.pem /opt/keycloak/keycloak-server.crt.pem COPY keycloak-server.key.pem /opt/keycloak/keycloak-server.key.pem
+
 RUN /opt/keycloak/bin/kc.sh build
 
 FROM quay.io/keycloak/keycloak:latest
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# change these values to point to a running postgres instance
+ENV KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/keycloak-server.crt.pem
+ENV KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/keycloak-server.key.pem
+
 ENV KC_DB=postgres
 ENV KC_DB_URL=jdbc:postgresql://mobius-do-user-7620299-0.b.db.ondigitalocean.com:25060/kc_db
 ENV KC_DB_USERNAME=doadmin
