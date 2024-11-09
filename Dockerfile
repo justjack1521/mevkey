@@ -18,6 +18,7 @@ ENV KC_DB_URL_DATABASE=openremote
 ENV KC_DB_SCHEMA=public
 ENV KC_DB_USERNAME=postgres
 ENV KC_DB_PASSWORD=postgres
+ENV KC_HOSTNAME=mevkey-hqezz.ondigitalocean.app
 ENV KC_HTTP_ENABLED=true
 
 EXPOSE 8080
