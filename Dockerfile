@@ -1,17 +1,25 @@
-# Start from the official Keycloak image
-FROM quay.io/keycloak/keycloak:latest
+FROM quay.io/keycloak/keycloak:${VERSION} AS builder
 
-# Set environment variables for Keycloak configuration
-# Set the database to be used (e.g., 'dev-file' for testing, 'postgres', 'mysql', etc.)
-ENV KC_DB dev-file
-# Set the hostname (customize this as needed)
-ENV KC_HOSTNAME localhost
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+ENV KC_DB=postgres
 
-# Copy any custom scripts or configuration files (optional)
-# COPY ./custom-configs /opt/keycloak/custom-configs
+WORKDIR /opt/keycloak
+RUN /opt/keycloak/bin/kc.sh build
 
-# Expose the Keycloak port
+FROM quay.io/keycloak/keycloak:${VERSION}
+
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+# Configure runtime options
+ENV KC_DB_URL_HOST=postgresql
+ENV KC_DB_URL_PORT=5432
+ENV KC_DB_URL_DATABASE=openremote
+ENV KC_DB_SCHEMA=public
+ENV KC_DB_USERNAME=postgres
+ENV KC_DB_PASSWORD=postgres
+ENV KC_HTTP_ENABLED=true
+
 EXPOSE 8080
 
-# Run Keycloak
-ENTRYPOINT ["keycloak", "start-dev"]
+ENTRYPOINT /opt/keycloak/bin/kc.sh ${KEYCLOAK_START_COMMAND:-start}
