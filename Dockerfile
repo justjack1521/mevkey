@@ -1,26 +1,23 @@
-FROM quay.io/keycloak/keycloak:${VERSION} AS builder
+FROM quay.io/keycloak/keycloak:latest as builder
 
+# Enable health and metrics support
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
+
+# Configure a database vendor
 ENV KC_DB=postgres
 
 WORKDIR /opt/keycloak
+# for demonstration purposes only, please make sure to use proper certificates in production instead
 RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:${VERSION}
-
+FROM quay.io/keycloak/keycloak:latest
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# Configure runtime options
-ENV KC_DB_URL_HOST=postgresql
-ENV KC_DB_URL_PORT=5432
-ENV KC_DB_URL_DATABASE=openremote
-ENV KC_DB_SCHEMA=public
-ENV KC_DB_USERNAME=postgres
-ENV KC_DB_PASSWORD=postgres
-ENV KC_HOSTNAME=mevkey-hqezz.ondigitalocean.app
-ENV KC_HTTP_ENABLED=true
-
-EXPOSE 8080
-
-ENTRYPOINT /opt/keycloak/bin/kc.sh ${KEYCLOAK_START_COMMAND:-start}
+# change these values to point to a running postgres instance
+ENV KC_DB=postgres
+ENV KC_DB_URL=jdbc:postgresql://mobius-do-user-7620299-0.b.db.ondigitalocean.com:25060/kc_db
+ENV KC_DB_USERNAME=doadmin
+ENV KC_DB_PASSWORD=kljbn14vu5fcn15s
+ENV KC_HOSTNAME=localhost
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
